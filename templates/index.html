@@ -15,6 +15,8 @@
     </head>
     <body class =container-fluid>
 
+        <!--Navbar taken and modified from here https://mdbootstrap.com/docs/standard/navigation/navbar/examples-and-customization/-->
+        <!--Different navbar is show depending on user login so the user can tell when they are logged in and go to their profile-->
         {%if not user_login%}
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 
@@ -84,7 +86,8 @@
             
             </nav>
             {% endif %}
-
+          
+            <!--Renders the search bar if a search has not been performed-->
           {%if not books%}
           <div class="container" style="padding-top: 40vh;">
             <form class="d-flex justify-content-center align-items-center" method="post" action="{{ url_for('index') }}">
@@ -107,7 +110,7 @@
 
 
 
-
+        <!--Rerendering the search bar in a different spot if a successful search is performed-->
         {%if books%}
         <div class="container" style="padding-top: 10vh;">
           <form class="d-flex justify-content-center align-items-center" method="post" action="{{ url_for('index') }}">
@@ -128,6 +131,7 @@
       </div>
       {% endif %}
 
+      <!--Renders the table of book search results-->
         {% if books %}
         <div class="container">
         <div class="row justify-content-center">

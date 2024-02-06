@@ -1,11 +1,12 @@
+--Creating the user table
 CREATE TABLE IF NOT EXISTS users (
 	user_id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL
 );
 
---DROP TABLE IF EXISTS reviews;
 
+--Creating the reviews table
 CREATE TABLE IF NOT EXISTS reviews (
 	review_id SERIAL PRIMARY KEY,
 	title VARCHAR(100) NOT NULL,
@@ -17,7 +18,7 @@ CREATE TABLE IF NOT EXISTS reviews (
 );
 
 
-
+--Creating the books table
 CREATE TABLE IF NOT EXISTS books (
 	isbn VARCHAR(20) PRIMARY KEY,
 	title VARCHAR(100) NOT NULL,
@@ -25,10 +26,9 @@ CREATE TABLE IF NOT EXISTS books (
 	year INTEGER CHECK (year >=0 AND year <=2030) NOT NULL
 );
 
+--Adding the constraint to the table so one user can't publish multiple reviews for the same book
 ALTER TABLE reviews ADD CONSTRAINT unique_reviewer_title UNIQUE (reviewer_name, title);
 
---COPY books FROM 'C:\\Users\\pauld\\Desktop\\ENGO551\\project1\\books.csv' WITH DELIMITER ',' CSV HEADER;
-SELECT * FROM reviews;
 
 
 

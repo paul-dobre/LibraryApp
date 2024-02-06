@@ -15,7 +15,8 @@
     </head>
     <body>
 
-
+        <!--Navbar taken and modified from here https://mdbootstrap.com/docs/standard/navigation/navbar/examples-and-customization/-->
+        <!--Different navbar is show depending on user login so the user can tell when they are logged in and go to their profile-->
         {%if not user_login%}
         <nav class="navbar navbar-expand-lg  bg-dark">
 
@@ -87,7 +88,7 @@
 
 
 
-
+        <!--Renders the page if the book information is provided-->
         {% if book_detail%}
         <div class="container">
             <div class="row d-flex align-items-center justify-content-center flex-grow-1 w-100">
@@ -110,7 +111,7 @@
 
         {% endif %}
 
-
+        <!--Renders the review form if the book details are provided-->
         {% if book_detail%}
         <div class="container mt-5">
             <h2>Personal Review</h2>
@@ -123,7 +124,8 @@
             </form>
           </div>
           {% endif %}
-
+        
+        <!--Renders the reviews if they exist-->
         {% if reviews %}
         <div class="container">
         <div class="row justify-content-center">

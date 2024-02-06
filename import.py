@@ -4,6 +4,7 @@ from flask_session import Session
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import scoped_session, sessionmaker
 
+#This import.py app file is used to create the books database from the books.csv
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'abcd-1234'
@@ -26,6 +27,7 @@ Session(app)
 engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
+#Function creating the table with query
 def main():
     query = "COPY books FROM 'C:\\Users\\pauld\\Desktop\\ENGO551\\project1\\books.csv' WITH DELIMITER ',' CSV HEADER"
     db.execute(text(query))
