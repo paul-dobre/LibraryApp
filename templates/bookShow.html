@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <link href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.19.1/css/mdb.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/mdb-ui-kit@3.3.0/dist/js/mdb.min.js"></script>
+
+        <title>My Webpage</title>
+    </head>
+    <body>
+
+
+        {%if not user_login%}
+        <nav class="navbar navbar-expand-lg  bg-dark">
+
+            <!-- Navbar brand -->
+            <a class="navbar-brand" href="/">Library</a>
+          
+            <!-- Collapse button -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
+              aria-controls="basicExampleNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+          
+            <!-- Collapsible content -->
+            <div class="collapse navbar-collapse" id="basicExampleNav">
+          
+              <!-- Links -->
+              <ul class="navbar-nav mr-auto">
+   
+                <li class="nav-item">
+                  <a class="nav-link" href="login">Login</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="register">Register</a>
+                </li>
+          
+              </ul>
+              <!-- Links -->
+
+            </div>
+            <!-- Collapsible content -->
+          
+          </nav>
+          {% endif %}
+
+
+
+          {%if user_login%}
+          <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  
+              <!-- Navbar brand -->
+              <a class="navbar-brand" href="/">Library</a>
+            
+              <!-- Collapse button -->
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
+                aria-controls="basicExampleNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+            
+              <!-- Collapsible content -->
+              <div class="collapse navbar-collapse" id="basicExampleNav">
+            
+                <!-- Links -->
+                <ul class="navbar-nav mr-auto">
+                  <li class="nav-item">
+                    <a class="nav-link" href="user">{{ username }}</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="logout">Logout</a>
+                  </li>
+            
+                </ul>
+                <!-- Links -->
+  
+              </div>
+              <!-- Collapsible content -->
+            
+            </nav>
+            {% endif %}
+
+
+
+
+        {% if book_detail%}
+        <div class="container">
+            <div class="row d-flex align-items-center justify-content-center flex-grow-1 w-100">
+
+                <div class="col d-flex flex-column justify-content-center align-items-center ">
+                    <h class="reviewText">Title:</h>
+                    <h class="reviewText">Author:</h>
+                    <h class="reviewText">Publication Year:</h>
+                    <h class="reviewText">IBSN:</h>
+                </div>
+
+                <div class="col d-flex flex-column justify-content-center align-items-center ">
+                    <h class="reviewText">{{book_detail.title}}</h>
+                    <h class="reviewText">{{book_detail.author}}</h>
+                    <h class="reviewText">{{book_detail.year}}</h>
+                    <h class="reviewText">{{book_detail.isbn}}</h>
+                </div>
+            </div>
+        </div>
+
+        {% endif %}
+
+
+        {% if book_detail%}
+        <div class="container mt-5">
+            <h2>Personal Review</h2>
+            <form action="{{ url_for('bookShow', isbn=book_detail.isbn) }}" method="post">
+              <div class="form-group">
+                <textarea class="form-control" id="review" name="review" rows="5" placeholder="Write your review here"></textarea>
+              </div>
+              
+              <button type="submit" class="btn btn-primary me-auto">Submit</button>
+            </form>
+          </div>
+          {% endif %}
+
+        {% if reviews %}
+        <div class="container">
+        <div class="row justify-content-center">
+        <table class = "flex-grow-1">
+            <thead>
+                <tr>
+                    <th>Reader</th>
+                    <th>Date</th>
+                    <th>Review</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for review in reviews %}
+                    <tr>
+                        <td>{{review.reviewer_name}}</td>
+                        <td>{{review.review_date}}</td>
+                        <td>{{review.description}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+          </div>
+          </div>
+        {% else %}
+          <div class = "row justify-content-center" style="padding-top: 2vw;">
+            <h class="reviewText">There are no existing reviews for this book.</h>
+        </div>
+        {% endif %}
+        
+    </body>
+</html>

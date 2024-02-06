@@ -1,0 +1,67 @@
+body {
+  background-color: #a2b2bb;
+  font-family: "Montserrat", sans-serif;
+}
+
+.no-overflow {
+  overflow: hidden;
+}
+
+nav {
+  background-color: rgba(49, 48, 49, 0.75);
+  border-radius: 10px;
+  max-height: 50px;
+}
+
+a {
+  color: white;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #c4cee0;
+}
+
+a.tablelink {
+  color: #1b1e24;
+  text-decoration: none;
+}
+
+table {
+  width: 50%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+table .grid, table tr, table th {
+  padding: 5px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+table th {
+  background-color: #1b1e24;
+  color: #a2b2bb;
+  font-size: 3vw;
+}
+table tr {
+  background-color: #e3d9d9;
+}
+table tr:hover {
+  background-color: #4E5066;
+  color: #FFFFFF;
+  border-top: 1px solid #22262e;
+}
+table td {
+  font-size: 1.5vw;
+}
+
+.reviewText {
+  font-family: "Montserrat", sans-serif;
+  font-weight: bold;
+  font-size: 3vw;
+  color: #ffffff;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; /* Bottom-right shadow */
+}
+
+
+
+/*# sourceMappingURL=style.css.map */

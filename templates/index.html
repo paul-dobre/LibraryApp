@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <link href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.19.1/css/mdb.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/mdb-ui-kit@3.3.0/dist/js/mdb.min.js"></script>
+
+        <title>My Webpage</title>
+    </head>
+    <body class =container-fluid>
+
+        {%if not user_login%}
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+            <!-- Navbar brand -->
+            <a class="navbar-brand" href="/">Library</a>
+          
+            <!-- Collapse button -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
+              aria-controls="basicExampleNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+          
+            <!-- Collapsible content -->
+            <div class="collapse navbar-collapse" id="basicExampleNav">
+          
+              <!-- Links -->
+              <ul class="navbar-nav mr-auto">
+ 
+                <li class="nav-item">
+                  <a class="nav-link" href="login">Login</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="register">Register</a>
+                </li>
+          
+              </ul>
+              <!-- Links -->
+
+            </div>
+            <!-- Collapsible content -->
+          
+          </nav>
+          {% endif %}
+
+
+
+          {%if user_login%}
+          <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  
+              <!-- Navbar brand -->
+              <a class="navbar-brand" href="/">Library</a>
+            
+              <!-- Collapse button -->
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
+                aria-controls="basicExampleNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+            
+              <!-- Collapsible content -->
+              <div class="collapse navbar-collapse" id="basicExampleNav">
+            
+                <!-- Links -->
+                <ul class="navbar-nav mr-auto">
+
+                  <li class="nav-item">
+                    <a class="nav-link" href="user">{{ username }}</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="logout">Logout</a>
+                  </li>
+            
+                </ul>
+                <!-- Links -->
+  
+              </div>
+              <!-- Collapsible content -->
+            
+            </nav>
+            {% endif %}
+
+          {%if not books%}
+          <div class="container" style="padding-top: 40vh;">
+            <form class="d-flex justify-content-center align-items-center" method="post" action="{{ url_for('index') }}">
+
+                <div class="flex-grow-1">
+                    <input type="search" class="form-control" id="searchInput" placeholder="Search..." name="search">
+                </div>
+
+                <div class="">
+                  <select class="form-control" id="searchColumn" name="search_type">
+                      <option value="title">Title</option>
+                      <option value="isbn">ISBN</option>
+                      <option value="author">Author</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary ml-2">Search</button>
+            </form>
+        </div>
+        {% endif %}
+
+
+
+
+        {%if books%}
+        <div class="container" style="padding-top: 10vh;">
+          <form class="d-flex justify-content-center align-items-center" method="post" action="{{ url_for('index') }}">
+
+              <div class="flex-grow-1">
+                  <input type="search" class="form-control" id="searchInput" placeholder="Search..." name="search">
+              </div>
+
+              <div class="">
+                <select class="form-control" id="searchColumn" name="search_type">
+                    <option value="title">Title</option>
+                    <option value="isbn">ISBN</option>
+                    <option value="author">Author</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary ml-2">Search</button>
+          </form>
+      </div>
+      {% endif %}
+
+        {% if books %}
+        <div class="container">
+        <div class="row justify-content-center">
+        <table class = "flex-grow-1">
+            <thead>
+                <tr>
+                    <th>ISBN</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Year</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                    <tr>
+                        <td><a href="{{ url_for('bookShow', isbn=book.isbn) }}" class="tablelink">{{ book.isbn }}</a></td>
+                        <td><a href="{{ url_for('bookShow', isbn=book.isbn) }}" class="tablelink">{{ book.title }}</a></td>
+                        <td><a href="{{ url_for('bookShow', isbn=book.isbn) }}" class="tablelink">{{ book.author }}</a></td>
+                        <td><a href="{{ url_for('bookShow', isbn=book.isbn) }}" class="tablelink">{{ book.year }}</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+          </div>
+          </div>
+          <!--ChatGPT was asked how to make this message appear when books is empty, but not when it is not passed at all.-->
+        {% elif books is defined %}
+            <div class = "row justify-content-center" style="padding-top: 2vw;">
+              <h class="reviewText">No books were found.</h>
+          </div>
+        {% endif %}
+
+
+
+
+
+    </body>
+</html>
