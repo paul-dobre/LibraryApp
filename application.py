@@ -1,5 +1,6 @@
 import os
-from flask import Flask, render_template, redirect, url_for, request, session, flash
+import requests
+from flask import Flask, render_template, redirect, url_for, request, session, flash, jsonify, abort
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_session import Session
 from sqlalchemy import create_engine, text
@@ -54,10 +55,10 @@ def index():
             username = session['username']
 
         if search:
-            query = "SELECT * FROM books WHERE {} ILIKE '{}%' ".format(search_type, search)
-            print(query)
+            query = "SELECT * FROM books WHERE {} ILIKE '%{}%' ".format(search_type, search)
+ 
             books = db.execute(text(query)).fetchall()
-            print(books)
+
             #With a successful search, the resulting books are returned to the index.html template
             return render_template("index.html", books=books, user_login=user_login, username=username)
         else: 
@@ -171,14 +172,26 @@ def bookShow():
             reviews = db.execute(text(queryR)).fetchall()
             book_detail = db.execute(text(queryB)).fetchall()
 
-
             user_login = request.args.get('user_login', default=False)
             username=None
             if 'username' in session:
                 user_login = True
                 username = session['username']
 
-        return render_template('bookShow.html', reviews=reviews, book_detail=book_detail[0], user_login=user_login, username=username)
+            #Fetching the data from the google api to display as part of the book info
+            google = requests.get("https://www.googleapis.com/books/v1/volumes", params={"q": "isbn:{}".format(isbn)})
+            data = google.json()
+
+            if "items" in data and data["items"]:
+                google_review = data["items"][0]["volumeInfo"].get("averageRating")
+                google_count = data["items"][0]["volumeInfo"].get("ratingsCount")
+            else:
+                # Handle the case where no items are returned
+                google_review = None
+                google_count = None
+                print("No data returned from Google Books API")
+
+        return render_template('bookShow.html', reviews=reviews, book_detail=book_detail[0], user_login=user_login, username=username, google_review=google_review, google_count = google_count)
     else:
         #If the method is POST, and the user is logged in, a review will be added to the table and displayed
         if 'username' in session:
@@ -186,12 +199,15 @@ def bookShow():
             queryB = "SELECT * FROM books WHERE isbn = '{}' ".format(isbn)
             
             book_detail = db.execute(text(queryB)).fetchall()
-            print(book_detail[0].isbn)
+
             reviewer_name = session['username']
             review_description = request.form.get('review')
 
-            query = "INSERT INTO reviews (title, author, description, reviewer_name, isbn) VALUES ( '{}', '{}', '{}', '{}', '{}' ) ON CONFLICT (reviewer_name, title) DO UPDATE SET description = EXCLUDED.description".format(book_detail[0].title, book_detail[0].author, review_description, reviewer_name, book_detail[0].isbn)
-            print(text(query))
+            rating = request.form.get('starsClickedInput')
+
+
+            query = "INSERT INTO reviews (title, author, description, reviewer_name, score, isbn) VALUES ( '{}', '{}', '{}', '{}', '{}', '{}' )".format(book_detail[0].title, book_detail[0].author, review_description, reviewer_name, rating, book_detail[0].isbn)
+  
             db.execute(text(query))
             db.commit()
 
@@ -205,12 +221,98 @@ def bookShow():
                 user_login = True
                 username = session['username']
 
+            #Fetching the data from the google api to display as part of the book info
+            google = requests.get("https://www.googleapis.com/books/v1/volumes", params={"q": "isbn:{}".format(isbn)})
+            data = google.json()
 
-            return render_template('bookShow.html', reviews=reviews, book_detail=book_detail[0], user_login=user_login, username=username)
+            if "items" in data and data["items"]:
+                google_review = data["items"][0]["volumeInfo"].get("averageRating")
+                google_count = data["items"][0]["volumeInfo"].get("ratingsCount")
+            else:
+                # Handle the case where no items are returned
+                google_review = None
+                google_count = None
+                print("No data returned from Google Books API")
+
+            
+            response = requests.get("http://127.0.0.1:5000/api/{}".format(isbn))
+            if response.status_code == 200:
+                # Print the JSON response data
+                print(response.json())
+            else:
+                # Print an error message if the request failed
+                print(f"Error: {response.status_code} - {response.text}")
+
+
+
+            return render_template('bookShow.html', reviews=reviews, book_detail=book_detail[0], user_login=user_login, username=username, google_review=google_review, google_count = google_count )
         else: #If the user is not logged in and tries to make a review, the user is redirected to the login page
             return redirect(url_for('login'))
 
 
+@app.route("/api/<isbn>", methods=['GET'])
+def get_data(isbn):
+
+
+
+    queryScore = "SELECT score FROM  reviews WHERE isbn = '{}' ".format(isbn)
+    queryTitle = "SELECT title FROM  books WHERE isbn = '{}' ".format(isbn)
+    queryAuthor = "SELECT author FROM  books WHERE isbn = '{}' ".format(isbn)
+
+    score = db.execute(text(queryScore)).fetchall()
+    
+    sum = 0
+    count = 0
+    rating = None
+    if score:
+        for s in score:
+            sum += s[0]
+            count += 1
+        #Average rating of book on my website for API
+        rating = sum/count
+
+
+    #Title of book for API
+    titleAPI = None
+    title = db.execute(text(queryTitle)).fetchall()
+
+    if title:
+        titleAPI = title[0][0]
+    else:
+        abort(404)
+
+    #Name of Author for API
+    authorAPI = None
+    author = db.execute(text(queryAuthor)).fetchall()
+    if author:
+        authorAPI = author[0][0]
+
+
+    google = requests.get("https://www.googleapis.com/books/v1/volumes", params={"q": "isbn:{}".format(isbn)})
+    data = google.json()
+
+    #Getting ISBN13 and date for API
+    if "items" in data and data["items"]:
+        #ChatGPT was prompted on how to extract the isbn13 from the google json response
+        google_isbn13 = next((item["identifier"] for item in data["items"][0]["volumeInfo"]["industryIdentifiers"] if item["type"] == "ISBN_13"), None)
+        google_date = data["items"][0]["volumeInfo"].get("publishedDate")
+    else:
+        # Handle the case where no items are returned
+        google_isbn13 = None
+        google_date = None
+
+    #Creating the dictionary to be returned as a json
+    data = {
+        "title": titleAPI,
+        "author": authorAPI,
+        "publishedDate": google_date,
+        "ISBN_10": isbn,
+        "ISBN_13": google_isbn13,
+        "reviewCount": count,
+        "averageRating": rating
+    }
+
+    return jsonify(data)
 
 
 

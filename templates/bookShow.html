@@ -5,7 +5,8 @@
         <link href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.19.1/css/mdb.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+        
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
@@ -98,6 +99,13 @@
                     <h class="reviewText">Author:</h>
                     <h class="reviewText">Publication Year:</h>
                     <h class="reviewText">IBSN:</h>
+                    {% if google_review %}
+                      <h class="reviewText">Google Rating:</h> 
+                    {% endif %}
+
+                    {% if google_count %}
+                      <h class="reviewText">Google Review Count:</h> 
+                    {% endif %}
                 </div>
 
                 <div class="col d-flex flex-column justify-content-center align-items-center ">
@@ -105,17 +113,65 @@
                     <h class="reviewText">{{book_detail.author}}</h>
                     <h class="reviewText">{{book_detail.year}}</h>
                     <h class="reviewText">{{book_detail.isbn}}</h>
+
+                    {% if google_review %}
+                      <h class="reviewText">{{google_review}}</h> 
+                    {% endif %}
+
+                    {% if google_count %}
+                      <h class="reviewText">{{google_count}}</h> 
+                    {% endif %}
+
                 </div>
             </div>
         </div>
 
         {% endif %}
 
+
+
+        
+        
         <!--Renders the review form if the book details are provided-->
         {% if book_detail%}
         <div class="container mt-5">
             <h2>Personal Review</h2>
+
+
+
+
             <form action="{{ url_for('bookShow', isbn=book_detail.isbn) }}" method="post">
+
+
+              <div class = "container d-flex rating justify-content-center" style="width:180px; margin-bottom: 2vw;">
+                <div class = "star">
+                    <a  class="bi-star-fill"></a>
+                    <a  class="bi-star-fill"></a>
+                    <a  class="bi-star-fill"></a>
+                    <a  class="bi-star-fill"></a>
+                    <a  class="bi-star-fill"></a>
+                </div>
+              </div>
+              <input type="hidden" name="starsClickedInput" id="starsClickedInput" value="0">
+
+    
+            <script>
+              var stars = document.querySelectorAll('.bi-star-fill')
+      
+              stars.forEach((item, index1) => {
+                item.addEventListener('click',
+                () => {
+                  stars.forEach((star, index2) => {
+                    index1 >= index2 ? star.classList.add('active') : star.classList.remove('active')
+                  })
+                    var starsClicked = document.querySelectorAll('.bi-star-fill.active').length;
+                    starsClickedInput.value = starsClicked.toString(); // Update the hidden input value
+                })
+              })
+            </script>
+
+
+
               <div class="form-group">
                 <textarea class="form-control" id="review" name="review" rows="5" placeholder="Write your review here"></textarea>
               </div>
@@ -135,6 +191,7 @@
                     <th>Reader</th>
                     <th>Date</th>
                     <th>Review</th>
+                    <th>Rating</th>
                 </tr>
             </thead>
             <tbody>
@@ -143,6 +200,17 @@
                         <td>{{review.reviewer_name}}</td>
                         <td>{{review.review_date}}</td>
                         <td>{{review.description}}</td>
+                        <td>
+                          <div class = "star">
+                          {% for star in range(review.score) %}
+                            <span class="bi bi-star-fill"></span>
+                          {% endfor %}
+
+                          {% for star in range(5 - review.score) %}
+                            <span class="bi bi-star"></span>
+                          {% endfor %}
+                          </div>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>

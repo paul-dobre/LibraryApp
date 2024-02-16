@@ -5,7 +5,8 @@
         <link href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.19.1/css/mdb.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+        
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
@@ -41,6 +42,7 @@
                       <th>Book Author</th>
                       <th>Date</th>
                       <th>Review</th>
+                      <th>Rating</th>
                   </tr>
               </thead>
               <tbody>
@@ -50,6 +52,17 @@
                           <td>{{review.author}}</td>
                           <td>{{review.review_date}}</td>
                           <td>{{review.description}}</td>
+                          <td>
+                            <div class = "star">
+                            {% for star in range(review.score) %}
+                              <span class="bi bi-star-fill"></span>
+                            {% endfor %}
+  
+                            {% for star in range(5 - review.score) %}
+                              <span class="bi bi-star"></span>
+                            {% endfor %}
+                            </div>
+                          </td>
                       </tr>
                   {% endfor %}
               </tbody>
