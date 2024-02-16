@@ -19,3 +19,10 @@ The register.html page allows users to register to the library app.
 The bookShow.html page shows the details of a book and its reviews when the users selects a book from their search.
 
 The user.html page allows users to see their existing reviews on books.
+
+#Project 2
+
+
+API functionality was added to the website. The API can be called to extract information on the books based on the ISBN from the websites database.
+Additionally, the review information from the Google API is added to information page if it returns.
+Finally, users can now rate books out of five and leave multiple reviews.

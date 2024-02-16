@@ -235,7 +235,7 @@ def bookShow():
                 print("No data returned from Google Books API")
 
             
-            response = requests.get("http://127.0.0.1:5000/api/{}".format(isbn))
+            response = requests.get("http://127.0.0.1:5000/api/{}".format(423984023948))
             if response.status_code == 200:
                 # Print the JSON response data
                 print(response.json())
